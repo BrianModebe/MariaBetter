@@ -1,0 +1,29 @@
+# Custom Ollama model for the UAE Finance Pro Chatbot's local backend.
+#
+# This is parameter tuning on top of the stock llama3.2 weights, NOT
+# fine-tuning -- it doesn't change what the model actually knows or how
+# good its tool-calling judgment is (that's a capability ceiling of a 3B
+# model, see the README). What it does fix:
+#   - temperature lower than the model's default (~0.8) -> more consistent
+#     behavior across repeated/similar prompts, instead of the same wording
+#     sometimes calling a tool and sometimes not.
+#
+# repeat_penalty was originally raised to 1.3 here to fight a token-
+# repetition loop ("9, 9, 9, 9..."), but that backfired: JSON syntax is
+# itself repetitive (a quote before/after every string, a comma between
+# every array element), so a strong repeat_penalty also fights the model's
+# ability to complete valid, longer tool-call JSON -- trading one failure
+# mode for a worse one (fewer complete chart calls at all). Left at
+# Ollama's default (1.1, i.e. off) for that reason.
+#
+# Build with:
+#   ollama create uae-finance-bot -f Modelfile
+# Then point local_chatbot.py / main_local.py at model="uae-finance-bot"
+# instead of "llama3.2".
+
+FROM llama3.2
+
+PARAMETER temperature 0.3
+PARAMETER num_predict 500
+
+SYSTEM You are a finance and finance-adjacent law education assistant for people living anywhere in the UAE. The application sends the full system prompt (persona, ground rules, retrieved knowledge-base passages) with every request, so this default is only used if the model is run directly (e.g. `ollama run uae-finance-bot`) without the app.

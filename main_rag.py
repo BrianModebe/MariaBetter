@@ -1,0 +1,112 @@
+"""
+UAE Finance Pro Chatbot -- RAG-powered CLI (Phase 2).
+
+Run:
+    python main_rag.py
+
+Requires ANTHROPIC_API_KEY to be set (see .env.example -- copy it to .env
+and fill in your key, or export it in your shell).
+
+The old TF-IDF-only bot (`python main.py`) still works unchanged, so you
+can compare answer quality between the two side by side (Task: "Test new
+RAG chatbot against old matcher").
+
+Commands:
+    reset       clear conversation history and start fresh
+    help        show this message
+    quit / exit leave the chatbot
+
+Anything else is treated as a finance question and sent through the RAG
+pipeline (retrieval + Claude, with the calculator available as a tool), so
+you can ask follow-ups and hold a real conversation, e.g.:
+    > what is uae corporate tax?
+    > does that apply to my free zone company?
+    > if I save 2000 aed a month at 6% for 10 years, what do I end up with?
+"""
+
+import os
+import sys
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv is optional; env vars can be set another way
+
+from rag_chatbot import RAGChatbot
+
+HELP_TEXT = """
+Commands:
+  reset             clear conversation history, start fresh
+  help              show this message
+  quit / exit       leave the chatbot
+
+Or just ask a finance question -- personal, investing, or UAE-specific, e.g.:
+  what is uae corporate tax?
+  does that apply to my free zone company?
+  if I save 2000 aed a month at 6% for 10 years, what do I end up with?
+""".strip()
+
+
+def main() -> None:
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        print(
+            "ANTHROPIC_API_KEY is not set. Copy .env.example to .env, add your "
+            "key, and re-run (or `export ANTHROPIC_API_KEY=...` in your shell)."
+        )
+        sys.exit(1)
+
+    bot = RAGChatbot()
+    print("UAE Finance Pro Chatbot (RAG) -- type 'help' for commands, 'quit' to exit.\n")
+
+    while True:
+        try:
+            user_input = input("> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye!")
+            break
+
+        if not user_input:
+            continue
+
+        lowered = user_input.lower()
+
+        if lowered in ("quit", "exit"):
+            print("Goodbye!")
+            break
+
+        if lowered == "help":
+            print(HELP_TEXT)
+            continue
+
+        if lowered == "reset":
+            bot.reset()
+            print("Conversation history cleared.\n")
+            continue
+
+        answer = bot.ask(user_input)
+        print(f"\n{answer}\n")
+        if bot.last_chart:
+            print(f"[Chart: \"{bot.last_chart['title']}\" -- run `python app.py` and open the web UI to view it]\n")
+        if bot.last_payment_button:
+            print("[Create payment link button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_invoice_button:
+            print("[Generate invoice button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_quote_button:
+            print("[Generate quote button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_schedule_payments_button:
+            print("[Schedule payments button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_chase_payment_button:
+            print("[Send reminder button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_refund_button:
+            print("[Send refund button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_talk_to_team_button:
+            print("[Talk to team button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_set_reminder_button:
+            print("[Set reminder button -- run `python app.py` and open the web UI to see it]\n")
+        if bot.last_register_business_button:
+            print("[Register business button -- run `python app.py` and open the web UI to see it]\n")
+
+
+if __name__ == "__main__":
+    main()

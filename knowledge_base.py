@@ -222,44 +222,12 @@ KNOWLEDGE_BASE = [
             "mathematically more efficient, but slower to show early progress."
         ),
     },
-    # ---------------------------------------------------------------- Retirement & Taxes
-    {
-        "topic": "Retirement & Taxes",
-        "question": "What is a 401k?",
-        "alt": ["what is a 401(k)", "employer retirement plan"],
-        "answer": (
-            "A 401(k) is a US employer-sponsored retirement account that lets "
-            "employees contribute pre-tax (or, for Roth 401(k)s, after-tax) income "
-            "for retirement, often with an employer matching contribution. Funds "
-            "grow tax-deferred until withdrawal, and early withdrawals typically "
-            "incur penalties."
-        ),
-    },
-    {
-        "topic": "Retirement & Taxes",
-        "question": "What is the difference between a Roth and a traditional retirement account?",
-        "alt": ["roth vs traditional ira"],
-        "answer": (
-            "With a traditional account, you contribute pre-tax money (lowering "
-            "taxable income now) and pay tax when you withdraw in retirement. "
-            "With a Roth account, you contribute after-tax money now, but "
-            "qualified withdrawals in retirement — including growth — are tax-free. "
-            "The better choice often depends on whether you expect to be in a "
-            "higher or lower tax bracket in retirement."
-        ),
-    },
-    {
-        "topic": "Retirement & Taxes",
-        "question": "What is a progressive tax system?",
-        "alt": ["how do tax brackets work"],
-        "answer": (
-            "In a progressive tax system, the tax rate increases as taxable "
-            "income rises, and each bracket only applies to the income within "
-            "that range — not your entire income. So earning more and moving into "
-            "a higher bracket doesn't reduce your take-home pay from the income "
-            "already taxed at lower rates."
-        ),
-    },
+    # NOTE: the old "Retirement & Taxes" entries here (401(k), Roth vs
+    # traditional IRA, US progressive tax brackets) were removed — they're
+    # actively wrong for a UAE user (no personal income tax, no 401k/IRA
+    # system). UAE-specific retirement, tax, and business-finance content now
+    # lives in knowledge/*.json (see knowledge_loader.py), organized by the
+    # clusters in the UAE Finance Pro Chatbot roadmap doc.
     # ---------------------------------------------------------------- Insurance & Risk
     {
         "topic": "Insurance & Risk",

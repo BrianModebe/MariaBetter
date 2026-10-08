@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+*.gguf
+.pytest_cache/
+.claude/worktrees/
